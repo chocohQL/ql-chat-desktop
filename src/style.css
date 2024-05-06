@@ -1,0 +1,48 @@
+.el-button:hover {
+    background-color: #38CD7F !important;
+}
+
+.el-button:active {
+    background-color: #38CD7F !important;
+}
+
+.el-button:focus {
+    background-color: #38CD7F !important;
+}
+
+.el-textarea {
+    /*滚动条整体部分*/
+    .el-textarea__inner::-webkit-scrollbar {
+        width: 8px;
+        height: 16px;
+    }
+    /*滚动条的轨道*/
+    .el-textarea__inner::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    /*滚动条里面的小方块，能向上向下移动*/
+    .el-textarea__inner::-webkit-scrollbar-thumb {
+        background-color: rgba(144, 147, 153, 0.3);
+        border-radius: 5px;
+        border: 1px solid #f1f1f1;
+        box-shadow: transparent;
+    }
+    .el-textarea__inner::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(144, 147, 153, 0.3);
+    }
+    .el-textarea__inner::-webkit-scrollbar-thumb:active {
+        background-color: rgba(144, 147, 153, 0.3);
+    }
+    /*边角，即两个滚动条的交汇处*/
+    .el-textarea__inner::-webkit-scrollbar-corner {
+        background-color: transparent;
+    }
+}
+
+.el-textarea__inner {
+    background-color: transparent !important;
+}
+
+.el-input__wrapper {
+    background-color: #E2E2E2 !important;
+}
