@@ -1,15 +1,15 @@
 <script setup>
-defineProps(["item"])
+defineProps(["item", "id"])
 </script>
 
 <template>
   <!--聊天记录-用户-->
-  <div v-if="item.type === 1">
+  <div v-if="item.userInfo.id === id">
     <div class="chat-item">
       <el-row>
         <el-col :span="8"/>
         <el-col :span="14">
-          <el-row><el-col :span="24"><div class="chat-name-me">{{item.username}}</div></el-col></el-row>
+          <el-row><el-col :span="24"><div class="chat-name-me">{{item.userInfo.username}}</div></el-col></el-row>
           <div class="bubble-me">
             <div class="chat-font">
               {{item.content}}
@@ -18,23 +18,23 @@ defineProps(["item"])
         </el-col>
         <el-col :span="2">
           <div class="chat-avatar">
-            <el-avatar shape="square" style="margin: 0;float: left" :size="32" class="userAvatar" :src="item.avatar" />
+            <el-avatar shape="square" style="margin: 0;float: left" :size="32" class="userAvatar" :src="item.userInfo.avatar" />
           </div>
         </el-col>
       </el-row>
     </div>
   </div>
   <!--聊天记录-好友-->
-  <div v-if="item.type === 0">
+  <div v-if="item.userInfo.id !== id">
     <div class="chat-item">
       <el-row>
         <el-col :span="2">
           <div class="chat-avatar">
-            <el-avatar shape="square" style="margin: 0;float: right" :size="32" class="userAvatar" :src="item.avatar" />
+            <el-avatar shape="square" style="margin: 0;float: right" :size="32" class="userAvatar" :src="item.userInfo.avatar" />
           </div>
         </el-col>
         <el-col :span="14">
-          <el-row><el-col :span="24"><div class="chat-name-other">{{item.username}}</div></el-col></el-row>
+          <el-row><el-col :span="24"><div class="chat-name-other">{{item.userInfo.username}}</div></el-col></el-row>
           <div class="bubble-other">
             <div class="chat-font">
               {{item.content}}

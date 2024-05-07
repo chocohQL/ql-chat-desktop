@@ -1,8 +1,8 @@
 <script setup>
 import {Close, Minus} from "@element-plus/icons-vue";
-import {ipcRenderer} from "electron";
 import {ref} from "vue";
 defineProps(["title"])
+const { ipcRenderer } = require('electron')
 let isOnTop = ref(false)
 
 const min = () => {
@@ -38,6 +38,13 @@ const alwaysOnTop = () => {
 </template>
 
 <style scoped>
+.title {
+  width: 680px;
+  height: max-content;
+  font-size: 20px;
+  margin: 20px;
+}
+
 .top {
   height: 24px;
   width: 24px;
@@ -47,10 +54,5 @@ const alwaysOnTop = () => {
 
 .top:hover {
   background-color: #E2E2E2;
-}
-
-.title {
-  font-size: 48px;
-  text-align: center;
 }
 </style>

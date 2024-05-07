@@ -4,24 +4,20 @@ import {ElMessage} from 'element-plus'
 import router from "../router/index.js";
 import {Close} from "@element-plus/icons-vue";
 
+const { ipcRenderer } = require('electron')
 const $api = inject('$api')
-const blank = ''
 const form = reactive({
-  password: blank,
-  username: blank,
+  password: '',
+  username: '',
 })
 
 onMounted(() => {
   ipcRenderer.send("window-resize-login")
 })
-
-const { ipcRenderer } = require('electron')
-
-const close = () => {
+async function close () {
   ipcRenderer.send("window-close");
 }
-
-const onSubmit = () => {
+async function onSubmit () {
   $api.user.login({
     username: form.username,
     password: form.password
@@ -74,5 +70,21 @@ const onSubmit = () => {
   width: 100%;
   margin-top: 20px;
   border-width: 0;
+}
+
+.top {
+  height: 24px;
+  width: 24px;
+  float: right;
+  -webkit-app-region: no-drag
+}
+
+.top:hover {
+  background-color: #E2E2E2;
+}
+
+.title {
+  font-size: 48px;
+  text-align: center;
 }
 </style>
