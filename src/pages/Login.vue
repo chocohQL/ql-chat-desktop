@@ -1,9 +1,16 @@
 <script setup>
-import {inject, onMounted, reactive, ref} from "vue";
+import {inject, onMounted, reactive} from "vue";
 import {ElMessage} from 'element-plus'
 import router from "../router/index.js";
 import {Close} from "@element-plus/icons-vue";
-const $api = inject('$api');
+
+const $api = inject('$api')
+const blank = ''
+const form = reactive({
+  password: blank,
+  username: blank,
+})
+
 onMounted(() => {
   ipcRenderer.send("window-resize-login")
 })
@@ -12,29 +19,17 @@ const { ipcRenderer } = require('electron')
 
 const close = () => {
   ipcRenderer.send("window-close");
-};
+}
 
-const form = reactive({
-  password: "",
-  username: "",
-})
 const onSubmit = () => {
-  if (form.password === '' || form.username === '') {
-    ElMessage.error("用户名或密码不能为空")
-    return
-  }
-  sessionStorage.removeItem('token')
   $api.user.login({
     username: form.username,
     password: form.password
   }).then(resp => {
     if (resp.data.code === 200) {
-      sessionStorage.setItem('token', resp.data.data)
-      localStorage.setItem('username', form.username)
-      localStorage.setItem('password', form.password)
       router.push('/home')
     } else {
-      ElMessage.error(resp.data.msg)
+      ElMessage.error("登录失败")
     }
   })
 }
@@ -71,11 +66,6 @@ const onSubmit = () => {
   -webkit-app-region: no-drag
 }
 
-.title {
-  font-size: 48px;
-  text-align: center;
-}
-
 .input {
   margin-top: 20px;
 }
@@ -84,16 +74,5 @@ const onSubmit = () => {
   width: 100%;
   margin-top: 20px;
   border-width: 0;
-}
-
-.top {
-  height: 24px;
-  width: 24px;
-  float: right;
-  -webkit-app-region: no-drag
-}
-
-.top:hover {
-  background-color: #E2E2E2;
 }
 </style>

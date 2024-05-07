@@ -10,7 +10,7 @@ export default defineConfig({
         hmr: true,
         proxy: {
             '/api': {
-                target: 'http://1.12.220.218:8585/cat',
+                target: 'http://localhost:8686/ql/chat/',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '')
             }
