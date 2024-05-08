@@ -1,11 +1,12 @@
 <script setup>
-defineProps(["item", "currentConversation", "index"])
+defineProps(["item", "currentConversationId"])
 defineEmits(["changeConservation"])
 </script>
 
 <template>
-  <div class="list-item" @click="$emit('changeConservation', item, index)"
-       :style="{ backgroundColor: index === currentConversation ? '#C4C4C4' : '' }">
+  <div class="list-item"
+       @click="$emit('changeConservation', item)"
+       :style="{ backgroundColor: item.id === currentConversationId ? '#C4C4C4' : '' }">
     <el-row>
       <el-col :span="6">
         <el-avatar shape="square" :size="40" class="avatar" :src="item.avatar"/>
@@ -16,11 +17,11 @@ defineEmits(["changeConservation"])
             <div class="previewName">{{ item.name }}</div>
           </el-col>
           <el-col :span="6">
-            <div class="previewTime">{{ item.previewTime }}</div>
+            <div class="previewTime">{{ item.previewTimeFormat }}</div>
           </el-col>
         </el-row>
         <el-row>
-          <div class="previewNew">{{ item.previewMessage }}</div>
+          <div class="previewChat">{{ item.previewMessage }}</div>
         </el-row>
       </el-col>
     </el-row>
@@ -44,10 +45,10 @@ defineEmits(["changeConservation"])
   line-height: 1.5;
 }
 
-.previewNew {
+.previewChat {
   font-size: 14px;
   font-family: Arial, sans-serif;
-  color: #B2B2B2;
+  color: #999999;
 }
 
 .previewTime {
@@ -56,6 +57,6 @@ defineEmits(["changeConservation"])
   margin-right: 10px;
   font-size: 12px;
   font-family: Arial, sans-serif;
-  color: #B2B2B2;
+  color: #999999;
 }
 </style>

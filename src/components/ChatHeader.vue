@@ -23,16 +23,16 @@ const alwaysOnTop = () => {
 
 <template>
   <div class="top" @click="close()">
-    <el-icon style="margin: 4px" size="14px"><Close /></el-icon>
+    <el-icon class="icon-window" size="14px"><Close /></el-icon>
   </div>
   <div class="top" @click="min()">
-    <el-icon style="margin: 4px" size="14px"><Minus /></el-icon>
+    <el-icon class="icon-window" size="14px"><Minus /></el-icon>
   </div>
   <div v-if="!isOnTop" class="top" @click="alwaysOnTop()">
-    <i class="bi bi-pin" style="margin: 4px;font-size: 13px"/>
+    <i class="bi bi-pin icon-not-top"/>
   </div>
   <div v-if="isOnTop" class="top" @click="alwaysOnTop()">
-    <i class="bi bi-pin" style="margin: 4px;font-size: 13px;color: #07C160"/>
+    <i class="bi bi-pin icon-on-top"/>
   </div>
   <div class="title">{{title}}</div>
 </template>
@@ -54,5 +54,20 @@ const alwaysOnTop = () => {
 
 .top:hover {
   background-color: #E2E2E2;
+}
+
+.icon-on-top {
+  margin: 4px;
+  font-size: 13px;
+  color: #07C160
+}
+
+.icon-not-top {
+  margin: 4px;
+  font-size: 13px
+}
+
+.icon-window {
+  margin: 4px
 }
 </style>

@@ -1,7 +1,7 @@
 import request from "../utils/request.js";
 
 export async function login(data) {
-    return await request({
+    return request({
         method: 'POST',
         url: 'user/login',
         data: JSON.stringify(data)
@@ -9,14 +9,14 @@ export async function login(data) {
 }
 
 export async function logout() {
-    return await request({
+    return request({
         method: 'POST',
         url: 'user/logout'
     })
 }
 
 export async function me() {
-    return await request({
+    return request({
         method: 'GET',
         url: '/user/me'
     })

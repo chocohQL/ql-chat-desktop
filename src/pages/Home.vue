@@ -9,18 +9,16 @@ import ChatHeader from "../components/ChatHeader.vue";
 import Conservation from "../components/Conservation.vue";
 
 const {ipcRenderer} = require('electron')
+const $api = inject('$api');
 const blank = ''
 const textarea = ref('')
-const $api = inject('$api');
 const scrollbarRef = ref()
 const innerRef = ref()
 let search = ref('')
-let currentConversation = ref(0)
+let currentConversationId = ref()
 const chatHistoryList = ref([])
-let userInfo = ref({
-})
-const conversation = ref({
-})
+let userInfo = ref({})
+const conversation = ref({})
 const conversationList = ref([])
 
 onMounted(() => {
@@ -33,36 +31,53 @@ onMounted(() => {
     $api.chat.lisConversation(userInfo.value.id).then(response => {
       conversationList.value = response.data.data;
       conversation.value = conversationList.value[0];
+      currentConversationId.value = conversation.value.id;
       listChatHistory(userInfo.value.id, conversation.value.targetId, conversation.value.type)
     })
   })
 })
-async function listChatHistory (userId, targetId, type) {
+
+async function updateConversation() {
+  $api.chat.lisConversation(userInfo.value.id).then(response => {
+    conversationList.value = response.data.data;
+  })
+}
+
+async function listChatHistory(userId, targetId, type) {
   $api.chat.listChatHistory(userId, targetId, type).then(response => {
     chatHistoryList.value = response.data.data;
     setScrollToBottom()
   })
 }
-async function changeConservation(cur, index) {
+
+async function changeConservation(cur) {
   conversation.value = cur;
-  currentConversation.value = index;
+  currentConversationId.value = cur.id;
+  textarea.value = blank;
   await listChatHistory(userInfo.value.id, cur.targetId, cur.type)
 }
+
 async function setScrollToBottom() {
   await nextTick()
   const max = innerRef.value.clientHeight
-  console.log(max);
   scrollbarRef.value.setScrollTop(max)
 }
 
 async function submit() {
   if (textarea.value.trim() !== blank) {
-    chatHistoryList.value.push({
+    $api.chat.sendChatHistory({
       content: textarea.value,
-      userInfo: userInfo.value,
+      userId: userInfo.value.id,
+      targetId: conversation.value.targetId,
+      type: conversation.value.type,
+    }).then(response => {
+      if (response.data.code === 200) {
+        chatHistoryList.value.push(response.data.data)
+        updateConversation()
+        setScrollToBottom()
+      }
     })
     textarea.value = blank
-    await setScrollToBottom()
   }
 }
 </script>
@@ -81,9 +96,8 @@ async function submit() {
       <!--好友列表-->
       <el-main class="list">
         <el-scrollbar>
-          <conservation @change-conservation="changeConservation"
-                        v-for="(item, index) in conversationList"
-                        :item="item" :index="index" :current-conversation="currentConversation">
+          <conservation @change-conservation="changeConservation" v-for="(item) in conversationList"
+                        :item="item" :currentConversationId="currentConversationId">
           </conservation>
         </el-scrollbar>
       </el-main>
@@ -101,20 +115,21 @@ async function submit() {
           </div>
         </el-scrollbar>
       </el-main>
-      <!--聊天输入选项-->
       <el-footer class="footer">
         <div class="footer-div">
+          <!--聊天输入选项-->
           <div class="input-option">
             <i class="bi bi-emoji-smile input-option-icon"/>
             <i class="bi bi-folder input-option-icon"/>
             <i class="bi bi-chat-dots input-option-icon"/>
           </div>
           <!--聊天输入区-->
-          <div class="textarea-area">
+          <div class="input-textarea">
             <el-input type="textarea" maxlength="500" rows="3" cols="72" resize="none"
                       class="textarea" @keyup.enter.exact="submit" v-model="textarea"/>
           </div>
-          <div style="height: 60px">
+          <!--聊天发送按钮-->
+          <div class="input-button">
             <el-button @click="submit" type="success" class="submit" plain>发送(S)</el-button>
           </div>
         </div>
@@ -219,7 +234,7 @@ async function submit() {
   padding: 0;
 }
 
-.textarea-area {
+.input-textarea {
   height: 100px;
   width: 620px;
   margin-left: 10px;
@@ -271,5 +286,9 @@ async function submit() {
 .input-option {
   height: 30px;
   margin-top: 10px;
+}
+
+.input-button {
+  height: 60px;
 }
 </style>
