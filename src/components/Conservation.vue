@@ -21,7 +21,8 @@ defineEmits(["changeConservation"])
           </el-col>
         </el-row>
         <el-row>
-          <div class="previewChat">{{ item.previewMessage }}</div>
+          <div v-if="item.previewType === 0" class="previewChat">{{ item.previewMessage }}</div>
+          <div v-if="item.previewType === 1" class="previewChat">{{item.userId === id ? "你" : "\"" + item.name + "\""}}撤回了一条消息</div>
         </el-row>
       </el-col>
     </el-row>
@@ -32,6 +33,10 @@ defineEmits(["changeConservation"])
 .list-item {
   width: 240px;
   height: 60px;
+}
+
+.list-item:hover {
+  background-color: #D0D0D0;
 }
 
 .avatar {

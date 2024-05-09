@@ -5,7 +5,7 @@ export default defineConfig({
     plugins: [vue()],
     base: "./",
     server: {
-        port: 8888,
+        port: 8889,
         cors: true,
         hmr: true,
         proxy: {

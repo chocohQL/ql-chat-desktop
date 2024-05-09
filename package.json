@@ -1,5 +1,5 @@
 {
-  "name": "QLchat",
+  "name": "ql-chat-desktop",
   "private": true,
   "version": "0.0.0",
   "main": "electron/main.js",

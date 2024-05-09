@@ -2,7 +2,8 @@ const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 
 function createWindow() {
-    let env = true;
+    const dev = true;
+    const openDevTools = true;
     const win = new BrowserWindow({
         width: 300,
         height: 400,
@@ -22,15 +23,17 @@ function createWindow() {
         }
     })
     win.setMenu(null)
-    if (env) {
+    if (dev) {
         const elePath = path.join(__dirname,'../node_modules/electron')
         require('electron-reload')('../', {
             electron: require(elePath),
         })
-        win.loadURL('http://localhost:8888')
-        win.webContents.openDevTools()
+        win.loadURL('http://localhost:8889')
     } else {
         win.loadFile('dist/index.html')
+    }
+    if (openDevTools) {
+        win.webContents.openDevTools()
     }
 }
 
@@ -59,11 +62,13 @@ ipcMain.on('window-close', () => {
 })
 
 ipcMain.on('window-resize-login', () => {
-    BrowserWindow.getFocusedWindow().setSize(300, 400)
+    BrowserWindow.getFocusedWindow().setSize(300, 400
+    )
 })
 
 ipcMain.on('window-resize-home', () => {
-    BrowserWindow.getFocusedWindow().setSize(1000, 650)
+    BrowserWindow.getFocusedWindow().setSize(1000, 650
+    )
 })
 
 ipcMain.on('always-on-top-true', () => {

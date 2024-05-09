@@ -1,10 +1,10 @@
 import axios from 'axios'
 import router from '../router'
+import config from '../config'
 
 const request = axios.create({
-    baseURL: '/api/',
-    // baseURL: 'http://localhost:8686/ql/chat/',
-    timeout: 10000
+    baseURL: config.requestConfig.baseURL,
+    timeout: config.requestConfig.timeout
 })
 request.defaults.withCredentials = true
 request.defaults.headers.post['Content-Type'] = 'application/json'

@@ -21,3 +21,10 @@ export async function sendChatHistory(data) {
         data: JSON.stringify(data)
     });
 }
+
+export async function deleteChatHistory(id) {
+    return request({
+        method: 'POST',
+        url: 'chat/deleteChatHistory?id=' + id,
+    });
+}

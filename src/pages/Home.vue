@@ -7,6 +7,7 @@ import ChatHistory from "../components/ChatHistory.vue";
 import Menu from "../components/Menu.vue";
 import ChatHeader from "../components/ChatHeader.vue";
 import Conservation from "../components/Conservation.vue";
+import config from "../config";
 
 const {ipcRenderer} = require('electron')
 const $api = inject('$api');
@@ -20,6 +21,18 @@ const chatHistoryList = ref([])
 let userInfo = ref({})
 const conversation = ref({})
 const conversationList = ref([])
+let ws = null;
+const contextMenuParam = ref({
+  contextMenuVisible: false,
+  chatHistoryId: 0,
+  x: 0,
+  y: 0
+})
+const contextMenu = [
+  {
+    value: 2,
+    label: '撤回',
+  }]
 
 onMounted(() => {
   // 设置窗口大小
@@ -35,7 +48,37 @@ onMounted(() => {
       listChatHistory(userInfo.value.id, conversation.value.targetId, conversation.value.type)
     })
   })
+  // 点击隐藏菜单事件
+  document.addEventListener('click', hideMenu)
+  // 初始化websocket
+  initWebSocket()
 })
+
+const initWebSocket = async () => {
+  console.log(config.requestConfig.socketURL)
+  ws = new WebSocket(config.requestConfig.socketURL);
+  console.log(config.requestConfig.socketURL)
+  ws.onmessage = (evt) => {
+    const message = JSON.parse(evt.data);
+    if (message.type === config.constant.SEND_CHAT_HISTORY) {
+      console.log(config.constant.SEND_CHAT_HISTORY)
+      pushChatHistory(message.data)
+    } else if (message.type === config.constant.DELETE_CHAT_HISTORY) {
+      console.log(config.constant.DELETE_CHAT_HISTORY)
+      deleteChatHistory(message.data)
+    }
+  }
+}
+function showContextMenu(event, id) {
+  contextMenuParam.value.contextMenuVisible = true;
+  contextMenuParam.value.chatHistoryId = id;
+  contextMenuParam.value.x = event.x;
+  contextMenuParam.value.y = event.y;
+}
+
+function hideMenu() {
+  contextMenuParam.value.contextMenuVisible = false;
+}
 
 async function updateConversation() {
   $api.chat.lisConversation(userInfo.value.id).then(response => {
@@ -72,13 +115,40 @@ async function submit() {
       type: conversation.value.type,
     }).then(response => {
       if (response.data.code === 200) {
-        chatHistoryList.value.push(response.data.data)
-        updateConversation()
-        setScrollToBottom()
+        pushChatHistory(response.data.data)
       }
     })
     textarea.value = blank
   }
+}
+
+async function handleContextMenu(value) {
+  hideMenu()
+  if (value === 2) {
+    var chatHistoryId = contextMenuParam.value.chatHistoryId;
+    $api.chat.deleteChatHistory(chatHistoryId).then(response => {
+      if (response.data.data === 1) {
+        deleteChatHistory(chatHistoryId)
+      }
+    })
+  }
+}
+
+function pushChatHistory(chatHistory) {
+  chatHistoryList.value.push(chatHistory)
+  updateConversation()
+  setScrollToBottom()
+}
+
+function deleteChatHistory(chatHistoryId) {
+  for (let i = 0; i < chatHistoryList.value.length; i++) {
+    console.log(chatHistoryList.value[i].content)
+    if (chatHistoryList.value[i].id === chatHistoryId) {
+      chatHistoryList.value[i].content = null;
+      chatHistoryList.value[i].type = 1;
+    }
+  }
+  updateConversation()
 }
 </script>
 
@@ -111,7 +181,7 @@ async function submit() {
       <el-main class="main">
         <el-scrollbar ref="scrollbarRef">
           <div ref="innerRef">
-            <ChatHistory v-for="item in chatHistoryList" :item="item" :id="userInfo.id"/>
+            <ChatHistory @showContextMenu="showContextMenu" v-for="item in chatHistoryList" :item="item" :id="userInfo.id"/>
           </div>
         </el-scrollbar>
       </el-main>
@@ -136,6 +206,15 @@ async function submit() {
       </el-footer>
     </el-container>
   </el-container>
+  <!--悬浮菜单-->
+  <div class="context-menu" v-if="contextMenuParam.contextMenuVisible"
+       :style="{top: `${contextMenuParam.y}px`, left: `${contextMenuParam.x}px`}">
+    <div v-for="item in contextMenu" class="context-menu-item">
+      <div class="context-menu-item-font" @click="handleContextMenu(item.value)">
+        {{ item.label }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -263,10 +342,6 @@ async function submit() {
   --el-input-icon-color: #5D5D5D !important;
 }
 
-.list-item:hover {
-  background-color: #D0D0D0;
-}
-
 .submit {
   margin-right: 30px;
   float: right;
@@ -290,5 +365,29 @@ async function submit() {
 
 .input-button {
   height: 60px;
+}
+
+.context-menu {
+  position: fixed;
+  background-color: white;
+  z-index: 9999;
+  border: 1px solid #cccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.context-menu-item {
+  width: 80px;
+  height: 30px;
+}
+
+.context-menu-item:hover {
+  background-color: #E2E2E2;
+}
+
+.context-menu-item-font {
+  font-size: 14px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 2.2;
 }
 </style>
